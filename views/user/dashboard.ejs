@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+  <title>Dashboard | Expense</title>
+  <meta content="" name="description">
+  <meta content="" name="keywords">
+
+  <!-- Favicons -->
+  <link href="../assets/img/favicon.png" rel="icon">
+  <link href="../assets/img/apple-touch-icon.png" rel="apple-touch-icon">
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.gstatic.com" rel="preconnect">
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
+
+  <!-- Vendor CSS Files -->
+  <link href="../assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="../assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+  <link href="../assets/vendor/boxicons/css/boxicons.min.css" rel="stylesheet">
+  <link href="../assets/vendor/quill/quill.snow.css" rel="stylesheet">
+  <link href="../assets/vendor/quill/quill.bubble.css" rel="stylesheet">
+  <link href="../assets/vendor/remixicon/remixicon.css" rel="stylesheet">
+  <link href="../assets/vendor/simple-datatables/style.css" rel="stylesheet">
+
+  <!-- Template Main CSS File -->
+  <link href="../assets/css/style.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+  <!-- ======= Header ======= -->
+   <%- include('header.ejs') %>
+  <!-- End Header -->
+
+  <!-- ======= Sidebar ======= -->
+   <%- include('aside.ejs') %>
+  <!-- End Sidebar-->
+
+  <main id="main" class="main">
+    <% categoriesWithLimit.forEach(category => { %>
+      <% if (category.limit > 0 && category.totalExpense >= category.limit) { %> <!-- Updated condition -->
+        <section class="alert alert-warning alert-dismissible fade show" role="alert">
+          <strong>Warning!</strong> The <%= category.name %> category has exceeded its limit of <b>₹<%= category.limit %>.</b>
+          <br>Total Expenses: <b>₹<%= category.totalExpense %>.</b>
+          Please be aware of this limit.
+    
+          <!-- Button to update the category limit to 0 -->
+          <form action="/user/updateCategoryLimit/<%= category.id %>" method="POST" style="display:inline;">
+            <input type="hidden" name="newLimit" value="0">
+            <button type="submit" class="btn btn-danger btn-sm ml-3">Set Limit to 0</button>
+          </form>
+    
+        </section>
+      <% } %>
+    <% }); %>
+    
+    
+    <section class="">
+      <div class="row">
+          <div class="col-lg-12">
+              <div class="row">
+                  <!-- income Card -->
+                  <div class="col-xxl-4 col-md-6">
+                      <div class="card info-card income-card">
+                          <div class="card-body">
+                              <h5 class="card-title text-success">Income [<span class="text-success small pt-1 fw-bold" id="month-name"></span>]</h5>
+                              <div class="d-flex align-items-center">
+                                  <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                      <i style="font-size: 42px;" class="bi bi-wallet2 pe-3"></i>
+                                  </div>
+                                  <div class="ps-3">
+                                      <h2>₹<%= income.toFixed(2) %></h2>
+                                      
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+                  <!-- End income Card -->
+  
+                  <!-- expense Card -->
+                  <div class="col-xxl-4 col-md-6">
+                      <div class="card info-card expense-card">
+                          <div class="card-body">
+                              <h5 class="card-title text-danger">Expense</h5>
+                              <div class="d-flex align-items-center">
+                                  <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                      <i style="font-size: 42px;" class="bi bi-currency-rupee pe-3"></i>
+                                  </div>
+                                  <div class="ps-3">
+                                      <h2>₹<%= expense.toFixed(2) %></h2>
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+                  <!-- End expense Card -->
+  
+                  <!-- balance Card -->
+                  <div class="col-xxl-4 col-xl-12">
+                      <div class="card info-card balance-card">
+                          <div class="card-body">
+                              <h5 class="card-title text-primary">Balance</h5>
+                              <div class="d-flex align-items-center">
+                                  <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                      <i style="font-size: 42px;" class="bi bi-piggy-bank pe-3"></i>
+                                  </div>
+                                  <div class="ps-3">
+                                      <h2>₹<%= balance.toFixed(2) %></h2>
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+                  <!-- End balance Card -->
+              </div>
+          </div>
+      </div>
+    </section>
+  
+    <section class="chart">
+      <div class="row">
+        <!-- Left Side: Pie Chart -->
+        <div class="col-xxl-6 col-md-6">
+          <canvas id="incomeExpenseChart"></canvas>
+        </div>
+        
+        <!-- Right Side: Dynamic Explanation -->
+        <div class="col-xxl-6 col-md-6">
+          <div id="dynamicExplanation"></div>
+          
+        </div>
+      </div>
+
+    </section>
+
+    <section class="barChartCatgo">
+      <div class="container mt-4">
+        <div id="barcategorys" class="card">
+          <div class="card-header bg-success text-white">
+            <h5>Category-wise Spending</h5>
+          </div>
+          <div class="card-body">
+            <canvas id="categoryExpenseChart" width="400" height="200"></canvas>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    
+    
+
+  </main>
+
+  <!-- ======= Footer ======= -->
+   <%- include('footer.ejs') %>
+  <!-- End Footer -->
+
+  <a href="/user/expense" class="btn btn-danger rounded-circle" id="add-expense"
+    style="position: fixed; bottom: 70px; right: 10px; width: 50px; height: 50px; 
+    display: flex; align-items: center; justify-content: center; z-index: 999;">
+      <i class="bi bi-plus" style="font-size: 24px;"></i>
+  </a>
+
+  <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+
+  <!-- Vendor JS Files -->
+  <script src="../assets/vendor/apexcharts/apexcharts.min.js"></script>
+  <script src="../assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="../assets/vendor/chart.js/chart.umd.js"></script>
+  <script src="../assets/vendor/echarts/echarts.min.js"></script>
+  <script src="../assets/vendor/quill/quill.min.js"></script>
+  <script src="../assets/vendor/simple-datatables/simple-datatables.js"></script>
+  <script src="../assets/vendor/tinymce/tinymce.min.js"></script>
+  <script src="../assets/vendor/php-email-form/validate.js"></script>
+
+  <!-- Template Main JS File -->
+  <script src="../assets/js/main.js"></script>
+
+  <script src="../assets/js/chart.js"></script>
+  <script src="../assets/js/chartjs-plugin-datalabels.js"></script>
+
+  <script>
+    const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+    const currentMonthName = monthNames[`<%= currentMonth %>`- 1];
+    document.getElementById('month-name').innerText = currentMonthName;
+  </script>
+
+  <script>
+      // Chart.js Pie Chart for Income, Expense, and Balance
+      const ctx = document.getElementById('incomeExpenseChart').getContext('2d');
+      
+      const income = <%- income %>;
+      const expense = <%- expense %>;
+      const balance = <%- balance %>;
+
+      // Calculate percentages
+      const expensePercentage = ((expense / income) * 100).toFixed(2);
+      const balancePercentage = ((balance / income) * 100).toFixed(2);
+      const incomePercentage = (100 - expensePercentage - balancePercentage).toFixed(2); // Remaining percentage for Income
+
+      const pieChart = new Chart(ctx, {
+        type: 'pie',
+        data: {
+          labels: ['Income', 'Expense', 'Balance'],
+          datasets: [{
+            data: [income, expense, balance],
+            backgroundColor: ['#28a745', '#dc3545', '#007bff'],
+            borderColor: ['#ffffff', '#ffffff', '#ffffff'],
+            borderWidth: 2
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: {
+              position: 'top',
+            },
+            tooltip: {
+              callbacks: {
+                label: function(tooltipItem) {
+                  const label = tooltipItem.label || '';
+                  const value = tooltipItem.raw || 0;
+                  return label + ': ₹' + value.toFixed(2);
+                }
+              }
+            },
+            datalabels: {
+              formatter: (value, ctx) => {
+                let sum = 0;
+                let dataArr = ctx.chart.data.datasets[0].data;
+                dataArr.map(data => {
+                  sum += data;
+                });
+                let percentage = (value * 100 / sum).toFixed(2) + "%";
+                return percentage;
+              },
+              color: '#fff',
+              font: {
+                weight: 'bold',
+                size: 14
+              }
+            }
+          }
+        },
+        plugins: [ChartDataLabels] // Activate the datalabels plugin
+      });
+
+      // Dynamic explanation based on percentages
+      const dynamicExplanation = document.getElementById('dynamicExplanation');
+      let explanationText = '';
+
+      if (expensePercentage > 70) {
+        explanationText = `You're spending a large portion (${expensePercentage}%) of your income. It might be a good idea to review your expenses and try to reduce unnecessary spending.`;
+      } else if (expensePercentage > 50 && expensePercentage <= 70) {
+        explanationText = `You're spending a significant amount (${expensePercentage}%) of your income, but you still have room for savings. Consider saving more if possible.`;
+      } else if (expensePercentage <= 50 && balancePercentage >= 50) {
+        explanationText = `Great job! You're spending less than half (${expensePercentage}%) of your income, and your balance is healthy (${balancePercentage}%). Keep it up!`;
+      } else if (balancePercentage < 20) {
+        explanationText = `Your balance is quite low (${balancePercentage}% of income). Try to save more for future financial stability.`;
+      } else {
+        explanationText = `You're managing your finances well, with a balance of ${balancePercentage}% of your income. Keep maintaining this good habit!`;
+      }
+
+      // Output the dynamic financial summary
+      dynamicExplanation.innerHTML = `
+        <div class="card mt-4">
+          <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">Financial Overview</h5>
+          </div>
+          <div class="card-body">
+            <div class="row mb-2">
+              <div class="col-6">
+                <p class="mb-0"><strong>Income:</strong></p>
+              </div>
+              <div class="col-6 text-end">
+                <p class="mb-0">₹${income.toFixed(2)}</p>
+              </div>
+            </div>
+            <div class="row mb-2">
+              <div class="col-6">
+                <p class="mb-0"><strong>Expense:</strong></p>
+              </div>
+              <div class="col-6 text-end">
+                <p class="mb-0">₹${expense.toFixed(2)} (${expensePercentage}%)</p>
+              </div>
+            </div>
+            <div class="row mb-3">
+              <div class="col-6">
+                <p class="mb-0"><strong>Balance:</strong></p>
+              </div>
+              <div class="col-6 text-end">
+                <p class="mb-0">₹${balance.toFixed(2)} (${balancePercentage}%)</p>
+              </div>
+            </div>
+            <div class="alert alert-info mt-3">
+              ${explanationText}
+            </div>
+          </div>
+        </div>
+      `;
+
+  </script>
+
+  <script>
+    // Data for the bar chart (Make sure these values are passed as arrays from the server-side)
+    const categoryLabels = JSON.parse(`<%- categoryLabels %>`);  // Pass labels from server-side
+    const categoryAmounts = JSON.parse(`<%- categoryAmounts %>`);  // Pass amounts from server-side as an array
+
+    // Generate dynamic colors based on the number of categories
+    const colors = categoryLabels.map((label, index) => {
+        // Color palette
+        const palette = ['#FF5733', '#33FF57', '#FF33FF', '#3357FF', '#FFC300', '#8A2BE2', '#FF4500', '#00FF7F'];
+        return palette[index % palette.length];  // Loop through colors if categories exceed the palette size
+    });
+
+    // Bar chart using Chart.js
+    const ctxBar = document.getElementById('categoryExpenseChart').getContext('2d');
+    
+    const barChart = new Chart(ctxBar, {
+        type: 'bar',
+        data: {
+            labels: categoryLabels,  // Category labels
+            datasets: [{
+                label: 'Expenses (₹)',
+                data: categoryAmounts,  // Corresponding category total amounts
+                backgroundColor: colors,  // Assign a different color for each category
+                borderColor: colors,      // Use the same color for the border
+                borderWidth: 1            // Bar border width
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        callback: function(value) {
+                            return '₹' + value.toLocaleString();  // Add ₹ sign and format as a number with commas
+                        }
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    display: true,
+                    position: 'top'
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(tooltipItem) {
+                            // Tooltip format: Category, Amount with ₹ and commas
+                            const label = categoryLabels[tooltipItem.dataIndex];
+                            const amount = tooltipItem.raw.toFixed(2);
+                            return `${label}: ₹${parseFloat(amount).toLocaleString()}`;
+                        }
+                    }
+                }
+            }
+        }
+    });
+  </script>
+
+
+
+
+</body>
+
+</html>

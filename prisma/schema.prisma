@@ -1,0 +1,76 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           Int           @id @default(autoincrement())
+  name         String
+  email        String        @unique
+  password     String
+  transactions Transaction[] // Relation to Transaction model
+  categories   Category[]    // Relation to Category model
+  goals     Goal[]
+  savings   Savings[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+}
+
+model Category {
+  id          Int          @id @default(autoincrement())
+  name        String       
+  limit       Float?       // Optional amount limit for this category (e.g., a budget)
+  userId      Int          // Reference to the user who owns this category
+  user        User         @relation(fields: [userId], references: [id])
+  transactions Transaction[]  // Relation to Transaction model
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+}
+
+model Transaction {
+  id              Int             @id @default(autoincrement())
+  userId          Int
+  user            User            @relation(fields: [userId], references: [id])
+  categoryId      Int
+  category        Category        @relation(fields: [categoryId], references: [id])
+  amount          Float // Positive for credit, negative for expense
+  description     String?
+  transactionType TransactionType // Enum for 'EXPENSE' or 'CREDIT'
+  transactionDate DateTime
+  month           Int // Store the month of the transaction (1-12)
+  year            Int // Store the year of the transaction
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+}
+
+model Goal {
+  id          Int      @id @default(autoincrement())
+  userId      Int
+  targetAmount Float    // The goal amount to reach
+  description String?   // Optional description of the goal
+  reached      Boolean   @default(false) // Indicates if the goal is reached
+  createdAt   DateTime @default(now())
+  user        User      @relation(fields: [userId], references: [id])
+
+  savings     Savings[] // Relation to Savings, one Goal can have multiple Savings
+}
+
+model Savings {
+  id          Int      @id @default(autoincrement())
+  userId      Int
+  goalId      Int?     // Optional foreign key to associate with a Goal
+  amount      Float    // Amount added to the piggy bank
+  createdAt   DateTime @default(now())
+  user        User      @relation(fields: [userId], references: [id])
+  goal        Goal?    @relation(fields: [goalId], references: [id]) // Relation to Goal
+}
+
+
+enum TransactionType {
+  EXPENSE
+  CREDIT
+}

@@ -1,0 +1,122 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+a:link,
+a:active,
+a:visited {
+    color: #fff;
+    text-decoration: none;
+    display: block;
+    padding: 12px 18px;
+    border: 2px solid #fff;
+    border-radius: 6px;
+}
+
+.btn:hover {
+    background-color: #fff;
+    color: #1a1a1a;
+    font-weight: bolder;
+    border: none;
+    outline: none;
+}
+
+body {
+    font-family: sans-serif;
+    font-size: 18px;
+}
+
+header {
+    padding: 10px 14px;
+    background-color: #1a1a1a;
+}
+
+header nav ul {
+    list-style-type: none;
+    display: flex;
+}
+
+header nav ul li {
+    padding: 4px 8px;
+}
+
+.main {
+    height: 100vh;
+    background-image: linear-gradient(360deg, #111111d2, #00000056), url('../img/bg.jpg');
+    background-size: cover;
+    position: relative;
+}
+
+.main .parent {
+    width: 60%;
+    color: #fff;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.main .parent h1 {
+    margin-bottom: 30px;
+}
+
+.main .parent h1::first-letter {
+    font-size: 200%;
+}
+
+.main .parent h3 {
+    font-weight: normal;
+    margin-bottom: 10px;
+}
+
+.parent .form-control input {
+    padding: 10px 14px;
+    margin-right: 10px;
+    width: 300px;
+    border: none;
+    border-radius: 6px;
+    font-size: 20px;
+}
+
+.parent .form-control input:focus {
+    outline: 4px solid rgba(116, 188, 255, 0.712);
+}
+
+.parent .form-control select {
+    padding: 10px 14px;
+    margin-right: 10px;
+    width: 300px;
+    cursor: pointer;
+    border: none;
+    border-radius: 6px;
+    font-size: 20px;
+}
+
+.parent .form-control select:focus {
+    outline: 4px solid rgba(116, 188, 255, 0.712);
+}
+
+.parent .form-control button {
+    background-color: #fff;
+    color: #2e6bf0;
+    padding: 10px;
+    font-size: 20px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.parent .form-control button:hover {
+    scale: .9;
+}
+
+
+
+
+
+
+.copyright {
+    padding: 10px 0;
+    text-align: center;
+}

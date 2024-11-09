@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+  <title>Expense | Add</title>
+  <meta content="" name="description">
+  <meta content="" name="keywords">
+
+  <!-- Favicons -->
+  <link href="../assets/img/favicon.png" rel="icon">
+  <link href="../assets/img/apple-touch-icon.png" rel="apple-touch-icon">
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.gstatic.com" rel="preconnect">
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
+
+  <!-- Vendor CSS Files -->
+  <link href="../assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="../assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+  <link href="../assets/vendor/boxicons/css/boxicons.min.css" rel="stylesheet">
+  <link href="../assets/vendor/quill/quill.snow.css" rel="stylesheet">
+  <link href="../assets/vendor/quill/quill.bubble.css" rel="stylesheet">
+  <link href="../assets/vendor/remixicon/remixicon.css" rel="stylesheet">
+  <link href="../assets/vendor/simple-datatables/style.css" rel="stylesheet">
+
+  <!-- Template Main CSS File -->
+  <link href="../assets/css/style.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+  <!-- ======= Header ======= -->
+   <%- include('header.ejs') %>
+  <!-- End Header -->
+
+  <!-- ======= Sidebar ======= -->
+   <%- include('aside.ejs') %>
+  <!-- End Sidebar-->
+
+  <main id="main" class="main">
+    
+    <div class="pagetitle">
+        <h1>Insert Expense</h1>
+    </div><!-- End Page Title -->
+  
+    <section class="section">
+        <div class="row justify-content-center">
+            <div class="col-lg-12">
+                <div class="card ">
+                    <div class="card-body">
+                        <h5 class="card-title">Expense</h5>
+                        
+                        <form action="/user/addExpense/<%= data.id %>" method="post">
+                            <div class="container mt-4">
+                                <div class="row align-items-center">
+                                <!-- Label Column -->
+                                <div class="col-md-4">
+                                    <label for="exampleInput" class="form-label">Category</label>
+                                </div>
+                            
+                                <!-- Input Field Column -->
+                                <div class="col-md-8">
+                                    <select name="category" class="form-control">
+                                        <option disabled hidden selected>Choose a Category</option>
+                                        <% category.forEach(col => { %>
+                                            <% if (col.name !== 'Credit' && col.name !== 'credit') { %>
+                                                <option value="<%= col.id %>"><%= col.name %></option>
+                                            <% } %>
+                                        <% }) %>
+                                    </select>
+                                </div>
+                                </div>
+                            </div>
+
+                            <div class="container mt-4">
+                                <div class="row align-items-center">
+                                <!-- Label Column -->
+                                <div class="col-md-4">
+                                    <label for="exampleInput" class="form-label">Amount</label>
+                                </div>
+                            
+                                <!-- Input Field Column -->
+                                <div class="col-md-8">
+                                    <input type="number" name="amt" class="form-control" id="amountInput" placeholder="Enter the amount">
+                                </div>
+                                </div>
+                            </div>
+    
+                            <div class="container mt-4">
+                                <div class="row align-items-center">
+                                <!-- Label Column -->
+                                <div class="col-md-4">
+                                    <label for="exampleInput" class="form-label">Note</label>
+                                </div>
+                            
+                                <!-- Input Field Column -->
+                                <div class="col-md-8">
+                                    <input type="text" name="notes" class="form-control" id="noteInput" placeholder="Enter the note">
+                                </div>
+                                </div>
+                            </div>
+    
+                            <!-- Submit Button -->
+                            <div class="container mt-4">
+                                <div class="row">
+                                <div class="col-md-1 text-center">
+                                    <button type="submit" class="btn btn-outline-secondary">Submit</button>
+                                </div>
+                                </div>
+                            </div>
+                        </form>
+              
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="row justify-content-center">
+        <div class="col-lg-12 ">
+            <div class="card">
+              <div class="card-body">
+                    <h5 class="card-title">All Expense Details</span></h5>
+  
+                    <table class="table table-borderless datatable">
+                      <thead>
+                        <tr>
+                          <th scope="col">#</th>
+                          <th scope="col">Expense</th>
+                          <th scope="col">Amount (Rs.)</th>
+                          <th scope="col">Note</th>
+                          <th scope="col">Date Time</th>
+                          <th scope="col">Action</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <% let count = 1; %>
+                        <% transaction.forEach(col => { %>
+                         <tr>
+                            <td><%= count %></td>
+                            <td><%= col.category.name %></td>
+                            <td><%= col.amount %></td>
+                            <td><%= col.description || `null` %></td>
+                            <td>
+                                <%= new Date(col.transactionDate).toLocaleString("en-IN", { timeZone: "Asia/Kolkata" }) %>
+                            </td>
+                            <td>
+                                <a href="/user/removeExpense/<%= col.id %>" class="btn btn-outline-danger">Remove</a>
+                            </td>
+                         </tr>
+                         <% count ++; %>
+                        <% }) %>
+                      </tbody>
+                    </table>
+              </div>
+            </div>
+  
+          </div>
+      </div>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- ======= Footer ======= -->
+   <%- include('footer.ejs') %>
+  <!-- End Footer -->
+
+  <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+
+  <!-- Vendor JS Files -->
+  <script src="../assets/vendor/apexcharts/apexcharts.min.js"></script>
+  <script src="../assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="../assets/vendor/chart.js/chart.umd.js"></script>
+  <script src="../assets/vendor/echarts/echarts.min.js"></script>
+  <script src="../assets/vendor/quill/quill.min.js"></script>
+  <script src="../assets/vendor/simple-datatables/simple-datatables.js"></script>
+  <script src="../assets/vendor/tinymce/tinymce.min.js"></script>
+  <script src="../assets/vendor/php-email-form/validate.js"></script>
+
+  <!-- Template Main JS File -->
+  <script src="../assets/js/main.js"></script>
+
+</body>
+
+</html>
